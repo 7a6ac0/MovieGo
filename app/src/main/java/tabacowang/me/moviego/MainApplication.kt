@@ -17,6 +17,7 @@ class MainApplication : Application() {
             modules(listOf(
                 networkModule,
                 apiModule,
+                dbModule,
                 gsonModule,
                 viewModelModule,
                 repoModule

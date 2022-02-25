@@ -4,6 +4,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import java.lang.reflect.Type
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,7 +18,7 @@ class CalendarDeserializer : JsonDeserializer<Calendar> {
             json?.asString?.toCalendarOrNull()
         } catch (e: Exception) {
             try {
-                val parsedResult = SimpleDateFormat.getDateTimeInstance().parse(json?.asString ?: "")
+                val parsedResult = SimpleDateFormat.getDateTimeInstance().parse(json?.asString ?: throw IllegalArgumentException())
                 Calendar.getInstance().apply {
                     time = parsedResult!!
                 }

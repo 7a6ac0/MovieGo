@@ -3,6 +3,9 @@ package tabacowang.me.moviego.data.remote
 import retrofit2.http.GET
 
 interface MovieApiService {
+    @GET("genre/movie/list")
+    suspend fun getGenreList(): GenreList
+
     @GET("movie/now_playing")
     suspend fun getNowPlayingMovies(): TmdbResponse<MovieData>
 

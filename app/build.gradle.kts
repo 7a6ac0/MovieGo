@@ -19,6 +19,16 @@ android {
             useSupportLibrary = true
         }
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += mapOf(
+                    "room.schemaLocation" to "$projectDir/schemas",
+                    "room.incremental" to "true",
+                    "room.expandProjection" to "true"
+                )
+            }
+        }
+
         buildConfigField("String", "API_ROOT", API_ROOT)
         buildConfigField("String", "IMAGE_API_ROOT", IMAGE_API_ROOT)
         buildConfigField("String", "TMDB_API_TOKEN", TMDB_API_TOKEN)
@@ -79,6 +89,11 @@ dependencies {
     // DI
     implementation(Dependencies.Koin.core)
     implementation(Dependencies.Koin.android)
+
+    // Room
+    implementation(Dependencies.Room.runtime)
+    implementation(Dependencies.Room.ktx)
+    kapt(Dependencies.Room.annotation)
 
     // Unit Test
     testImplementation(Dependencies.Test.junit)

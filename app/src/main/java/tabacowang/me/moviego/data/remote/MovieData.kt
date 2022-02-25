@@ -10,6 +10,8 @@ data class MovieData(
     val posterPath: String?,
     @SerializedName("title")
     val title: String?,
+    @SerializedName("original_title")
+    val originalTitle: String?,
     @SerializedName("release_date")
     val releaseDate: Calendar?,
     @SerializedName("genres")
@@ -22,6 +24,11 @@ data class MovieData(
     val backdropPath: String?,
     @SerializedName("genre_ids")
     val genreIds: List<Int>?
+)
+
+data class GenreList(
+    @SerializedName("genres")
+    val genreList: List<Genre>?
 )
 
 data class Genre(

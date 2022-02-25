@@ -47,7 +47,7 @@ object Versions {
         const val lifecycle = "2.4.1"
         const val legacy = "1.0.0"
         const val paging = "3.1.0"
-        const val room = "2.3.0"
+        const val room = "2.4.1"
     }
 
     object JetpackCompose {

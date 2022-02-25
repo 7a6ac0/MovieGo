@@ -1,5 +1,6 @@
 package tabacowang.me.moviego.ui.home
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -52,7 +56,7 @@ class HomeFragment : Fragment() {
 fun MovieGoMainWidget(
     viewModel: HomeViewModel
 ) {
-    val isLoading by viewModel.isLoading.observeAsState(false)
+    val isLoading by viewModel.isLoading.observeAsState(true)
     val nowPlaying by viewModel.nowPlayingMovies.observeAsState()
     val popular by viewModel.popularMovies.observeAsState()
     val topRated by viewModel.topRatedMovies.observeAsState()
@@ -74,6 +78,11 @@ fun MovieGoMainWidget(
 
 @Composable
 fun BuildMovieCarousel(title: String, movieList: List<MovieData>) {
+    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.dp / LocalDensity.current.density - 16.dp
+    val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp / LocalDensity.current.density
+    val orientation = LocalConfiguration.current.orientation
+    val itemWidth = if (orientation == Configuration.ORIENTATION_PORTRAIT) screenWidth else screenHeight
+
     Spacer(modifier = Modifier.padding(top = 4.dp))
     HeaderWidget(title = title) {
 
@@ -83,7 +92,7 @@ fun BuildMovieCarousel(title: String, movieList: List<MovieData>) {
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
     ) {
         items(movieList) { movie ->
-            BuildMovieItem(movie = movie)
+            BuildMovieItem(width = itemWidth, movie = movie)
         }
     }
 }

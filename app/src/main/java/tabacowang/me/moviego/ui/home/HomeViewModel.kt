@@ -9,16 +9,17 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import tabacowang.me.moviego.data.remote.Genre
 import tabacowang.me.moviego.data.remote.MovieData
 import tabacowang.me.moviego.data.remote.TmdbResponse
-import tabacowang.me.moviego.data.repo.MovieRepo
+import tabacowang.me.moviego.data.repo.MovieApiRepo
 
 class HomeViewModel : ViewModel(), KoinComponent {
-    private val movieRepo: MovieRepo by inject()
+    private val movieApiRepo: MovieApiRepo by inject()
 
     private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     private val _nowPlayingMovies = MutableLiveData<TmdbResponse<MovieData>>()
     val nowPlayingMovies: LiveData<TmdbResponse<MovieData>> get() = _nowPlayingMovies
 
@@ -31,13 +32,19 @@ class HomeViewModel : ViewModel(), KoinComponent {
     private val _upcomingMovies = MutableLiveData<TmdbResponse<MovieData>>()
     val upcomingMovies: LiveData<TmdbResponse<MovieData>> get() = _upcomingMovies
 
-    fun getNowPlayingMovies() {
+    init {
+        getMovies()
+    }
+
+    fun getMovies() {
         viewModelScope.launch {
             _isLoading.value = true
-            val nowPlayingRequest = async { movieRepo.getNowPlayingMovies() }
-            val popularRequest = async { movieRepo.getPopularMovies() }
-            val topRatedRequest = async { movieRepo.getTopRatedMovies() }
-            val upcomingRequest = async { movieRepo.getUpcomingMovies() }
+            val genreList = movieApiRepo.getGenreList() ?: emptyList()
+
+            val nowPlayingRequest = async { movieApiRepo.getNowPlayingMovies() }
+            val popularRequest = async { movieApiRepo.getPopularMovies() }
+            val topRatedRequest = async { movieApiRepo.getTopRatedMovies() }
+            val upcomingRequest = async { movieApiRepo.getUpcomingMovies() }
 
             val (nowPlayingResult, popularResult, topRatedResult, upcomingResult) = listOf(
                 nowPlayingRequest,
@@ -45,6 +52,13 @@ class HomeViewModel : ViewModel(), KoinComponent {
                 topRatedRequest,
                 upcomingRequest
             ).awaitAll()
+
+            if (genreList.isNotEmpty()) {
+                findGenreNameList(genreList, nowPlayingResult?.results)
+                findGenreNameList(genreList, popularResult?.results)
+                findGenreNameList(genreList, topRatedResult?.results)
+                findGenreNameList(genreList, upcomingResult?.results)
+            }
 
             _nowPlayingMovies.value = nowPlayingResult
             _popularMovies.value = popularResult
@@ -55,7 +69,11 @@ class HomeViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    init {
-        getNowPlayingMovies()
+    private fun findGenreNameList(genreList: List<Genre>, movieDatas: List<MovieData>?) {
+        if (!movieDatas.isNullOrEmpty()) {
+            movieDatas.forEach { movieData ->
+                movieData.genreList = genreList.filter { movieData.genreIds?.contains(it.id) ?: false}
+            }
+        }
     }
 }
