@@ -1,6 +1,5 @@
 package tabacowang.me.moviego.data.repo
 
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import tabacowang.me.moviego.data.local.GenreModel
@@ -19,8 +18,6 @@ class MovieDbRepoImpl : BaseRepo(), MovieDbRepo, KoinComponent {
     }
 
     override suspend fun getGenreList(): List<GenreModel>? {
-        return coroutineApiCall(Dispatchers.IO) {
-            movieGoDao.getGenreList()
-        }
+        return movieGoDao.getGenreList()
     }
 }

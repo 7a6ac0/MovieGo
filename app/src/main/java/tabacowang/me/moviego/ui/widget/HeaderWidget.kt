@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +25,10 @@ fun HeaderWidget(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title)
+        Text(
+            text = title,
+            color = MaterialTheme.colors.onSurface
+        )
         if (onClickListener != null) {
             Button(onClick = onClickListener) {
                 Text(text = "See All")
@@ -34,7 +38,7 @@ fun HeaderWidget(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun HeaderWidgetPreview() {
     HeaderWidget(title = "MovieGo") {
         println("OnClick")
