@@ -12,7 +12,9 @@ import org.koin.core.component.inject
 import tabacowang.me.moviego.data.remote.Genre
 import tabacowang.me.moviego.data.remote.MovieData
 import tabacowang.me.moviego.data.remote.TmdbResponse
+import tabacowang.me.moviego.data.remote.filterGenreList
 import tabacowang.me.moviego.data.repo.MovieApiRepo
+import tabacowang.me.moviego.util.MovieCategory
 
 class HomeViewModel : ViewModel(), KoinComponent {
     private val movieApiRepo: MovieApiRepo by inject()
@@ -41,10 +43,26 @@ class HomeViewModel : ViewModel(), KoinComponent {
             _isLoading.value = true
             val genreList = movieApiRepo.getGenreList() ?: emptyList()
 
-            val nowPlayingRequest = async { movieApiRepo.getNowPlayingMovies() }
-            val popularRequest = async { movieApiRepo.getPopularMovies() }
-            val topRatedRequest = async { movieApiRepo.getTopRatedMovies() }
-            val upcomingRequest = async { movieApiRepo.getUpcomingMovies() }
+            val nowPlayingRequest = async {
+                movieApiRepo.getMovieList(MovieCategory.MOW_PLAYING)?.also {
+                    it.results?.map { movieData -> movieData.filterGenreList(genreList) }
+                }
+            }
+            val popularRequest = async {
+                movieApiRepo.getMovieList(MovieCategory.POPULAR)?.also {
+                    it.results?.map { movieData -> movieData.filterGenreList(genreList) }
+                }
+            }
+            val topRatedRequest = async {
+                movieApiRepo.getMovieList(MovieCategory.TOP_RATED)?.also {
+                    it.results?.map { movieData -> movieData.filterGenreList(genreList) }
+                }
+            }
+            val upcomingRequest = async {
+                movieApiRepo.getMovieList(MovieCategory.UPCOMING)?.also {
+                    it.results?.map { movieData -> movieData.filterGenreList(genreList) }
+                }
+            }
 
             val (nowPlayingResult, popularResult, topRatedResult, upcomingResult) = listOf(
                 nowPlayingRequest,
@@ -53,12 +71,6 @@ class HomeViewModel : ViewModel(), KoinComponent {
                 upcomingRequest
             ).awaitAll()
 
-            if (genreList.isNotEmpty()) {
-                findGenreNameList(genreList, nowPlayingResult?.results)
-                findGenreNameList(genreList, popularResult?.results)
-                findGenreNameList(genreList, topRatedResult?.results)
-                findGenreNameList(genreList, upcomingResult?.results)
-            }
 
             _nowPlayingMovies.value = nowPlayingResult
             _popularMovies.value = popularResult
@@ -66,14 +78,6 @@ class HomeViewModel : ViewModel(), KoinComponent {
             _upcomingMovies.value = upcomingResult
 
             _isLoading.value = false
-        }
-    }
-
-    private fun findGenreNameList(genreList: List<Genre>, movieDatas: List<MovieData>?) {
-        if (!movieDatas.isNullOrEmpty()) {
-            movieDatas.forEach { movieData ->
-                movieData.genreList = genreList.filter { movieData.genreIds?.contains(it.id) ?: false}
-            }
         }
     }
 }

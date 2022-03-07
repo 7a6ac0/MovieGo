@@ -37,3 +37,7 @@ data class Genre(
     @SerializedName("name")
     val name: String?
 )
+
+fun MovieData.filterGenreList(genreList: List<Genre>) {
+    this.genreList = genreList.filter { genre ->  this.genreIds?.contains(genre.id) ?: false}
+}

@@ -46,10 +46,8 @@ object Dependencies {
     }
 
     object Paging {
-        const val runtime =
-            "androidx.paging:paging-runtime:${Versions.ArchitectureComponents.paging}"
-        const val rxJava2 =
-            "androidx.paging:paging-rxjava2:${Versions.ArchitectureComponents.paging}"
+        const val runtime = "androidx.paging:paging-runtime:${Versions.ArchitectureComponents.paging}"
+        const val rxJava2 = "androidx.paging:paging-rxjava2:${Versions.ArchitectureComponents.paging}"
     }
 
     object Room {
@@ -74,8 +72,9 @@ object Dependencies {
         const val rxjava2 = "androidx.compose.runtime:runtime-rxjava2:${Versions.JetpackCompose.jetpackCompose}"
         const val activity = "androidx.activity:activity-compose:${Versions.JetpackCompose.activity}"
         const val appCompatTheme = "com.google.accompanist:accompanist-appcompat-theme:${Versions.JetpackCompose.appCompatTheme}"
-
+        const val paging = "androidx.paging:paging-compose:${Versions.JetpackCompose.paging}"
         const val ratingBar = "com.github.a914-gowtham:compose-ratingbar:${Versions.JetpackCompose.ratingBar}"
+        const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:${Versions.JetpackCompose.swipeRefresh}"
     }
 
     object Coin {

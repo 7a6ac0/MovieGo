@@ -83,6 +83,9 @@ dependencies {
     implementation(Dependencies.JetpackCompose.tooling)
     implementation(Dependencies.JetpackCompose.activity)
     implementation(Dependencies.JetpackCompose.liveData)
+    implementation(Dependencies.JetpackCompose.paging)
+    implementation(Dependencies.Paging.runtime)
+    implementation(Dependencies.JetpackCompose.swipeRefresh)
     implementation(Dependencies.Coin.coil)
     implementation(Dependencies.Coin.coilCompose)
 

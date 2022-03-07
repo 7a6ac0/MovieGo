@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -25,10 +28,14 @@ import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tabacowang.me.moviego.R
 import tabacowang.me.moviego.data.remote.MovieData
+import tabacowang.me.moviego.ui.all.MovieAllFragment
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
 import tabacowang.me.moviego.ui.widget.HeaderWidget
+import tabacowang.me.moviego.ui.widget.LoadingWidget
+import tabacowang.me.moviego.util.MovieCategory
+import tabacowang.me.moviego.util.openFragment
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), HomeClickListener {
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -43,16 +50,23 @@ class HomeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MovieGoTheme {
-                    MovieGoMainWidget(viewModel)
+                    Scaffold {
+                        MovieGoMainWidget(viewModel = viewModel, listener = this@HomeFragment)
+                    }
                 }
             }
         }
+    }
+
+    override fun onButtonSeeAllClicked(movieCategory: MovieCategory) {
+        requireActivity().openFragment(MovieAllFragment.newInstance(movieCategory), true)
     }
 }
 
 @Composable
 fun MovieGoMainWidget(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    listener: HomeClickListener
 ) {
     val isLoading by viewModel.isLoading.observeAsState(true)
     val nowPlaying by viewModel.nowPlayingMovies.observeAsState()
@@ -61,19 +75,18 @@ fun MovieGoMainWidget(
     val upcoming by viewModel.upcomingMovies.observeAsState()
 
     if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        LoadingWidget(modifier = Modifier.fillMaxSize())
     } else {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
         ) {
             if (nowPlaying?.results?.isNotEmpty() == true) {
                 item {
                     HeaderWidget(title = stringResource(id = R.string.category_now_playing)) {
-
+                        listener.onButtonSeeAllClicked(MovieCategory.MOW_PLAYING)
                     }
                 }
                 item {
@@ -86,7 +99,7 @@ fun MovieGoMainWidget(
             if (popular?.results?.isNotEmpty() == true) {
                 item {
                     HeaderWidget(title = stringResource(id = R.string.category_popular)) {
-
+                        listener.onButtonSeeAllClicked(MovieCategory.POPULAR)
                     }
                 }
                 item {
@@ -100,7 +113,7 @@ fun MovieGoMainWidget(
             if (topRated?.results?.isNotEmpty() == true) {
                 item {
                     HeaderWidget(title = stringResource(id = R.string.category_top_rated)) {
-
+                        listener.onButtonSeeAllClicked(MovieCategory.TOP_RATED)
                     }
                 }
                 item {
@@ -113,7 +126,7 @@ fun MovieGoMainWidget(
             if (upcoming?.results?.isNotEmpty() == true) {
                 item {
                     HeaderWidget(title = stringResource(id = R.string.category_upcoming)) {
-
+                        listener.onButtonSeeAllClicked(MovieCategory.UPCOMING)
                     }
                 }
                 items(upcoming?.results ?: emptyList()) { movie ->

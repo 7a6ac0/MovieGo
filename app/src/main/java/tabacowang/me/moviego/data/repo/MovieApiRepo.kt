@@ -1,20 +1,26 @@
 package tabacowang.me.moviego.data.repo
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import tabacowang.me.moviego.data.local.GenreModel
-import tabacowang.me.moviego.data.remote.Genre
-import tabacowang.me.moviego.data.remote.MovieApiService
-import tabacowang.me.moviego.data.remote.MovieData
-import tabacowang.me.moviego.data.remote.TmdbResponse
+import tabacowang.me.moviego.data.remote.*
+import tabacowang.me.moviego.util.MovieCategory
 
 interface MovieApiRepo {
     suspend fun getGenreList(): List<Genre>?
-    suspend fun getNowPlayingMovies(): TmdbResponse<MovieData>?
-    suspend fun getPopularMovies(): TmdbResponse<MovieData>?
-    suspend fun getTopRatedMovies(): TmdbResponse<MovieData>?
-    suspend fun getUpcomingMovies(): TmdbResponse<MovieData>?
+    suspend fun getMovieList(
+        movieCategory: MovieCategory,
+        page: Int? = null
+    ): TmdbResponse<MovieData>?
+    fun getMoviePagingData(
+        movieCategory: MovieCategory,
+        pageSize: Int = 10
+    ): Flow<PagingData<MovieData>>
 }
 
 class MovieApiApiRepoImpl : BaseRepo(), MovieApiRepo, KoinComponent {
@@ -38,19 +44,21 @@ class MovieApiApiRepoImpl : BaseRepo(), MovieApiRepo, KoinComponent {
         }
     }
 
-    override suspend fun getNowPlayingMovies() = coroutineApiCall(Dispatchers.IO) {
-        movieApiService.getNowPlayingMovies()
+    override suspend fun getMovieList(movieCategory: MovieCategory, page: Int?) = coroutineApiCall(Dispatchers.IO) {
+        movieApiService.getMovieList(movieCategory.category, page)
     }
 
-    override suspend fun getPopularMovies() = coroutineApiCall(Dispatchers.IO) {
-        movieApiService.getPopularMovies()
-    }
+    override fun getMoviePagingData(
+        movieCategory: MovieCategory,
+        pageSize: Int
+    ): Flow<PagingData<MovieData>> {
+        val pager = Pager(
+            config = PagingConfig(pageSize = pageSize),
+            pagingSourceFactory = {
+                MovieAllPagingSource(movieCategory = movieCategory)
+            }
+        )
 
-    override suspend fun getTopRatedMovies() = coroutineApiCall(Dispatchers.IO) {
-        movieApiService.getTopRatedMovies()
-    }
-
-    override suspend fun getUpcomingMovies() = coroutineApiCall(Dispatchers.IO) {
-        movieApiService.getUpcomingMovies()
+        return pager.flow
     }
 }

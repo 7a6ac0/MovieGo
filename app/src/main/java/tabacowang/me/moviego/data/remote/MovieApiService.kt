@@ -1,20 +1,16 @@
 package tabacowang.me.moviego.data.remote
 
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface MovieApiService {
     @GET("genre/movie/list")
     suspend fun getGenreList(): GenreList
 
-    @GET("movie/now_playing")
-    suspend fun getNowPlayingMovies(): TmdbResponse<MovieData>
-
-    @GET("movie/popular")
-    suspend fun getPopularMovies(): TmdbResponse<MovieData>
-
-    @GET("movie/top_rated")
-    suspend fun getTopRatedMovies(): TmdbResponse<MovieData>
-
-    @GET("movie/upcoming")
-    suspend fun getUpcomingMovies(): TmdbResponse<MovieData>
+    @GET("movie/{movieCategory}")
+    suspend fun getMovieList(
+        @Path("movieCategory") movieCategory: String,
+        @Query("page") page: Int? = null
+    ): TmdbResponse<MovieData>
 }
