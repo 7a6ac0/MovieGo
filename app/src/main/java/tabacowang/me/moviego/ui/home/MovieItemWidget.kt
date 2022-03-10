@@ -6,13 +6,17 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.google.accompanist.placeholder.placeholder
 import tabacowang.me.moviego.BuildConfig
+import tabacowang.me.moviego.R
 import tabacowang.me.moviego.data.remote.Genre
 import tabacowang.me.moviego.data.remote.MovieData
 import tabacowang.me.moviego.ui.theme.genreBackground
@@ -20,81 +24,153 @@ import tabacowang.me.moviego.util.format
 import java.util.*
 
 @Composable
-fun BuildBackdropItem(
+fun BuildBackdropItemPlaceHolder(
     width: Dp,
-    movie: MovieData
+    modifier: Modifier = Modifier
 ) {
     Card(
         shape = MaterialTheme.shapes.large,
         elevation = 5.dp,
-        modifier = Modifier
-            .clickable {  }
     ) {
         Column(
             modifier = Modifier
-            .padding(bottom = 8.dp)
-            .width(width),
+                .padding(bottom = 8.dp)
+                .width(width),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Image(
-                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movie.backdropPath}"),
-                contentDescription = null,
-                modifier = Modifier.aspectRatio(16f.div(9)),
-                contentScale = ContentScale.Crop
+            Box(modifier = modifier.aspectRatio(16f.div(9)))
+            Text(
+                text = stringResource(id = R.string.string_unknown),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).then(modifier)
             )
             Text(
-                movie.title ?: "",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                text = stringResource(id = R.string.string_unknown),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).then(modifier)
             )
-            Text(
-                movie.releaseDate?.format() ?: "",
-                maxLines = 1,
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            if (!movie.genreList.isNullOrEmpty()) {
-                BuildMovieGenre(modifier = Modifier.padding(horizontal = 8.dp), genreList = movie.genreList!!)
+            ) {
+                repeat(3) {
+                    Text(text = "動作", modifier = modifier)
+                }
             }
         }
     }
 }
 
 @Composable
-fun BuildPosterItem(
-    movie: MovieData
+fun BuildBackdropItem(
+    width: Dp,
+    movieData: MovieData,
+    itemClickListener: ((MovieData) -> Unit)? = null
 ) {
     Card(
         shape = MaterialTheme.shapes.large,
         elevation = 5.dp,
         modifier = Modifier
-            .clickable {  }
+            .clickable { itemClickListener?.invoke(movieData) }
     ) {
         Column(
             modifier = Modifier
-            .padding(bottom = 8.dp)
-            .width(200.dp),
+                .padding(bottom = 8.dp)
+                .width(width),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Image(
-                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movie.posterPath}"),
+                painter = rememberImagePainter(
+                    data = "${BuildConfig.IMAGE_API_ROOT}w500/${movieData.backdropPath}",
+                ),
                 contentDescription = null,
-                modifier = Modifier.aspectRatio(9f.div(16)),
+                modifier = Modifier.aspectRatio(16f.div(9)),
                 contentScale = ContentScale.Crop
             )
             Text(
-                movie.title ?: "",
+                text = movieData.title ?: stringResource(id = R.string.string_unknown),
+                style = MaterialTheme.typography.h6,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Text(
-                movie.releaseDate?.format() ?: "",
+                text = movieData.releaseDate?.format() ?: stringResource(id = R.string.string_unknown),
+                style = MaterialTheme.typography.subtitle1,
                 maxLines = 1,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
-            if (!movie.genreList.isNullOrEmpty()) {
-                BuildMovieGenre(modifier = Modifier.padding(horizontal = 8.dp), genreList = movie.genreList!!)
+            if (!movieData.genreList.isNullOrEmpty()) {
+                BuildMovieGenre(modifier = Modifier.padding(horizontal = 8.dp), genreList = movieData.genreList!!)
+            }
+        }
+    }
+}
+
+@Composable
+fun BuildPosterItemPlaceHolder(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        shape = MaterialTheme.shapes.large,
+        elevation = 5.dp,
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .width(200.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(modifier = Modifier.aspectRatio(9f.div(16)).then(modifier))
+            Text(
+                text = stringResource(id = R.string.string_unknown),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).then(modifier)
+            )
+            Text(
+                text = stringResource(id = R.string.string_unknown),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).then(modifier)
+            )
+            Text(text = "動作", modifier = Modifier.padding(horizontal = 8.dp).then(modifier))
+        }
+    }
+}
+
+@Composable
+fun BuildPosterItem(
+    movieData: MovieData,
+    itemClickListener: ((MovieData) -> Unit)? = null
+) {
+    Card(
+        shape = MaterialTheme.shapes.large,
+        elevation = 5.dp,
+        modifier = Modifier
+            .clickable { itemClickListener?.invoke(movieData) }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .width(200.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Image(
+                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movieData.posterPath}"),
+                contentDescription = null,
+                modifier = Modifier.aspectRatio(9f.div(16)),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = movieData.title ?: stringResource(id = R.string.string_unknown),
+                style = MaterialTheme.typography.h6,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            Text(
+                text = movieData.releaseDate?.format() ?: stringResource(id = R.string.string_unknown),
+                style = MaterialTheme.typography.subtitle1,
+                maxLines = 1,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            if (!movieData.genreList.isNullOrEmpty()) {
+                BuildMovieGenre(modifier = Modifier.padding(horizontal = 8.dp), genreList = movieData.genreList!!)
             }
         }
     }
@@ -102,20 +178,21 @@ fun BuildPosterItem(
 
 @Composable
 fun BuildNormalItem(
-    movie: MovieData
+    movieData: MovieData,
+    itemClickListener: ((MovieData) -> Unit)? = null
 ) {
     Card(
         shape = MaterialTheme.shapes.large,
         elevation = 5.dp,
         modifier = Modifier
-            .clickable {  }
+            .clickable { itemClickListener?.invoke(movieData) }
     ) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
         ) {
             Image(
-                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movie.posterPath}"),
+                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movieData.posterPath}"),
                 contentDescription = null,
                 modifier = Modifier.aspectRatio(1f),
                 contentScale = ContentScale.Crop
@@ -127,16 +204,18 @@ fun BuildNormalItem(
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 Text(
-                    movie.title ?: "",
+                    text = movieData.title ?: stringResource(id = R.string.string_unknown),
+                    style = MaterialTheme.typography.h6,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    movie.releaseDate?.format() ?: "",
+                    text = movieData.releaseDate?.format() ?: stringResource(id = R.string.string_unknown),
+                    style = MaterialTheme.typography.subtitle1,
                     maxLines = 1,
                 )
-                if (!movie.genreList.isNullOrEmpty()) {
-                    BuildMovieGenre(genreList = movie.genreList!!)
+                if (!movieData.genreList.isNullOrEmpty()) {
+                    BuildMovieGenre(genreList = movieData.genreList!!)
                 }
             }
         }
@@ -155,6 +234,7 @@ fun BuildMovieGenre(modifier: Modifier = Modifier, genreList: List<Genre>) {
             genreList.forEach {
                 Text(
                     text = it.name ?: "",
+                    style = MaterialTheme.typography.subtitle2,
                     modifier = Modifier
                         .background(color = genreBackground, shape = MaterialTheme.shapes.small)
                         .padding(4.dp)

@@ -4,4 +4,6 @@
     <string name="category_popular">Popular</string>
     <string name="category_top_rated">Top Rated</string>
     <string name="category_upcoming">Upcoming</string>
+
+    <string name="string_unknown">UNKNOWN</string>
 </resources>

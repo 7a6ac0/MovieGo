@@ -85,7 +85,8 @@ dependencies {
     implementation(Dependencies.JetpackCompose.liveData)
     implementation(Dependencies.JetpackCompose.paging)
     implementation(Dependencies.Paging.runtime)
-    implementation(Dependencies.JetpackCompose.swipeRefresh)
+    implementation(Dependencies.JetpackCompose.Accompanist.swipeRefresh)
+    implementation(Dependencies.JetpackCompose.Accompanist.placeHolderMaterial)
     implementation(Dependencies.Coin.coil)
     implementation(Dependencies.Coin.coilCompose)
 

@@ -12,10 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.placeholder
 
 @Composable
 fun HeaderWidget(
     title: String,
+    showPlaceHolder: Boolean = false,
     onClickListener: (() -> Unit)? = null
 ) {
     Row(
@@ -27,10 +31,14 @@ fun HeaderWidget(
     ) {
         Text(
             text = title,
-            color = MaterialTheme.colors.onSurface
+            color = MaterialTheme.colors.onSurface,
+            modifier = Modifier.placeholder(visible = showPlaceHolder, highlight = PlaceholderHighlight.fade())
         )
         if (onClickListener != null) {
-            Button(onClick = onClickListener) {
+            Button(
+                onClick = onClickListener,
+                modifier = Modifier.placeholder(visible = showPlaceHolder, highlight = PlaceholderHighlight.fade())
+            ) {
                 Text(text = "See All")
             }
         }

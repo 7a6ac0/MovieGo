@@ -5,33 +5,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.placeholder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tabacowang.me.moviego.R
 import tabacowang.me.moviego.data.remote.MovieData
 import tabacowang.me.moviego.ui.all.MovieAllFragment
+import tabacowang.me.moviego.ui.detail.MovieDetailFragment
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
 import tabacowang.me.moviego.ui.widget.HeaderWidget
-import tabacowang.me.moviego.ui.widget.LoadingWidget
 import tabacowang.me.moviego.util.MovieCategory
 import tabacowang.me.moviego.util.openFragment
 
@@ -61,6 +65,10 @@ class HomeFragment : Fragment(), HomeClickListener {
     override fun onButtonSeeAllClicked(movieCategory: MovieCategory) {
         requireActivity().openFragment(MovieAllFragment.newInstance(movieCategory), true)
     }
+
+    override fun onMovieItemClicked(movieData: MovieData) {
+        requireActivity().openFragment(MovieDetailFragment.newInstance(movieData), true)
+    }
 }
 
 @Composable
@@ -75,11 +83,40 @@ fun MovieGoMainWidget(
     val upcoming by viewModel.upcomingMovies.observeAsState()
 
     if (isLoading) {
-        LoadingWidget(modifier = Modifier.fillMaxSize())
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .verticalScroll(state = rememberScrollState(), enabled = false)
+        ) {
+            HeaderWidget(
+                title = stringResource(id = R.string.category_now_playing),
+                showPlaceHolder = true,
+                onClickListener = {}
+            )
+            BuildBackdropItemPlaceHolder(
+                width = getMovieItemFitWidth(),
+                modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade())
+            )
+            HeaderWidget(
+                title = stringResource(id = R.string.category_popular),
+                showPlaceHolder = true,
+                onClickListener = {}
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.horizontalScroll(state = rememberScrollState(), enabled = false)
+            ) {
+                repeat(2) {
+                    BuildPosterItemPlaceHolder(
+                        modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade())
+                    )
+                }
+            }
+        }
     } else {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
         ) {
@@ -91,7 +128,8 @@ fun MovieGoMainWidget(
                 }
                 item {
                     BuildMovieCarousel(
-                        movieList = nowPlaying?.results ?: emptyList()
+                        movieList = nowPlaying?.results ?: emptyList(),
+                        itemClickListener = listener::onMovieItemClicked
                     )
                 }
             }
@@ -105,7 +143,8 @@ fun MovieGoMainWidget(
                 item {
                     BuildMovieCarousel(
                         itemType = MovieItemType.POSTER,
-                        movieList = popular?.results ?: emptyList()
+                        movieList = popular?.results ?: emptyList(),
+                        itemClickListener = listener::onMovieItemClicked
                     )
                 }
             }
@@ -118,7 +157,8 @@ fun MovieGoMainWidget(
                 }
                 item {
                     BuildMovieCarousel(
-                        movieList = topRated?.results ?: emptyList()
+                        movieList = topRated?.results ?: emptyList(),
+                        itemClickListener = listener::onMovieItemClicked
                     )
                 }
             }
@@ -130,7 +170,10 @@ fun MovieGoMainWidget(
                     }
                 }
                 items(upcoming?.results ?: emptyList()) { movie ->
-                    BuildNormalItem(movie = movie)
+                    BuildNormalItem(
+                        movieData = movie,
+                        itemClickListener = listener::onMovieItemClicked
+                    )
                 }
             }
         }
@@ -138,19 +181,24 @@ fun MovieGoMainWidget(
 }
 
 @Composable
-fun BuildMovieCarousel(itemType: MovieItemType = MovieItemType.BACKDROP, movieList: List<MovieData>) {
+fun BuildMovieCarousel(
+    itemType: MovieItemType = MovieItemType.BACKDROP,
+    movieList: List<MovieData>,
+    itemClickListener: ((MovieData) -> Unit)? = null
+) {
     when (itemType) {
         MovieItemType.BACKDROP -> {
-            val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.dp / LocalDensity.current.density - 16.dp
-            val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp / LocalDensity.current.density
-            val orientation = LocalConfiguration.current.orientation
-            val itemWidth = if (orientation == Configuration.ORIENTATION_PORTRAIT) screenWidth else screenHeight
+            val itemWidth = getMovieItemFitWidth()
 
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(movieList) { movie ->
-                    BuildBackdropItem(width = itemWidth, movie = movie)
+                    BuildBackdropItem(
+                        width = itemWidth,
+                        movieData = movie,
+                        itemClickListener = itemClickListener
+                    )
                 }
             }
         }
@@ -159,9 +207,20 @@ fun BuildMovieCarousel(itemType: MovieItemType = MovieItemType.BACKDROP, movieLi
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(movieList) { movie ->
-                    BuildPosterItem(movie = movie)
+                    BuildPosterItem(
+                        movieData = movie,
+                        itemClickListener = itemClickListener
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun getMovieItemFitWidth(): Dp {
+    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.dp / LocalDensity.current.density - 16.dp
+    val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp / LocalDensity.current.density
+    val orientation = LocalConfiguration.current.orientation
+    return if (orientation == Configuration.ORIENTATION_PORTRAIT) screenWidth else screenHeight
 }

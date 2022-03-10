@@ -74,7 +74,11 @@ object Dependencies {
         const val appCompatTheme = "com.google.accompanist:accompanist-appcompat-theme:${Versions.JetpackCompose.appCompatTheme}"
         const val paging = "androidx.paging:paging-compose:${Versions.JetpackCompose.paging}"
         const val ratingBar = "com.github.a914-gowtham:compose-ratingbar:${Versions.JetpackCompose.ratingBar}"
-        const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:${Versions.JetpackCompose.swipeRefresh}"
+
+        object Accompanist {
+            const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:${Versions.JetpackCompose.accompanist}"
+            const val placeHolderMaterial = "com.google.accompanist:accompanist-placeholder-material:${Versions.JetpackCompose.accompanist}"
+        }
     }
 
     object Coin {

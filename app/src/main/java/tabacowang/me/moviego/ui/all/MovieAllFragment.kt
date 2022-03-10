@@ -34,7 +34,7 @@ import tabacowang.me.moviego.util.MovieCategory
 class MovieAllFragment : Fragment() {
 
     companion object {
-        const val ARGUMENT_MOVIE_CATEGORY = "ARGUMENT_MOVIE_CATEGORY"
+        private const val ARGUMENT_MOVIE_CATEGORY = "ARGUMENT_MOVIE_CATEGORY"
         fun newInstance(movieCategory: MovieCategory) = MovieAllFragment().apply {
             arguments = bundleOf(ARGUMENT_MOVIE_CATEGORY to movieCategory)
         }
@@ -86,7 +86,7 @@ fun MovieAllWidget(
         ) {
             items(movieItems) { movie ->
                 movie?.let {
-                    BuildNormalItem(movie = it)
+                    BuildNormalItem(movieData = it)
                 }
             }
 
