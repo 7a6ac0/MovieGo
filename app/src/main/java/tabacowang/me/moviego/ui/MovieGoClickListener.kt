@@ -1,9 +1,9 @@
-package tabacowang.me.moviego.ui.home
+package tabacowang.me.moviego.ui
 
-import tabacowang.me.moviego.data.remote.MovieData
+import tabacowang.me.moviego.data.remote.model.MovieData
 import tabacowang.me.moviego.util.MovieCategory
 
-interface HomeClickListener {
+interface MovieGoClickListener {
     fun onButtonSeeAllClicked(movieCategory: MovieCategory)
     fun onMovieItemClicked(movieData: MovieData)
 }

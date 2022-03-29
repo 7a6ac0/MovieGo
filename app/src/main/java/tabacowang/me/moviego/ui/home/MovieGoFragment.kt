@@ -1,6 +1,5 @@
 package tabacowang.me.moviego.ui.home
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,17 +12,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -31,7 +25,8 @@ import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tabacowang.me.moviego.R
-import tabacowang.me.moviego.data.remote.MovieData
+import tabacowang.me.moviego.data.remote.model.MovieData
+import tabacowang.me.moviego.ui.MovieGoClickListener
 import tabacowang.me.moviego.ui.all.MovieAllFragment
 import tabacowang.me.moviego.ui.detail.MovieDetailFragment
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
@@ -39,10 +34,10 @@ import tabacowang.me.moviego.ui.widget.HeaderWidget
 import tabacowang.me.moviego.util.MovieCategory
 import tabacowang.me.moviego.util.openFragment
 
-class HomeFragment : Fragment(), HomeClickListener {
+class MovieGoFragment : Fragment(), MovieGoClickListener {
 
     companion object {
-        fun newInstance() = HomeFragment()
+        fun newInstance() = MovieGoFragment()
     }
 
     private val viewModel: HomeViewModel by viewModel()
@@ -55,7 +50,7 @@ class HomeFragment : Fragment(), HomeClickListener {
             setContent {
                 MovieGoTheme {
                     Scaffold {
-                        MovieGoMainWidget(viewModel = viewModel, listener = this@HomeFragment)
+                        MovieGoMainWidget(viewModel = viewModel, listener = this@MovieGoFragment)
                     }
                 }
             }
@@ -63,7 +58,7 @@ class HomeFragment : Fragment(), HomeClickListener {
     }
 
     override fun onButtonSeeAllClicked(movieCategory: MovieCategory) {
-        requireActivity().openFragment(MovieAllFragment.newInstance(movieCategory), true)
+        requireActivity().openFragment(MovieAllFragment.newInstance(movieCategory = movieCategory), true)
     }
 
     override fun onMovieItemClicked(movieData: MovieData) {
@@ -74,7 +69,7 @@ class HomeFragment : Fragment(), HomeClickListener {
 @Composable
 fun MovieGoMainWidget(
     viewModel: HomeViewModel,
-    listener: HomeClickListener
+    listener: MovieGoClickListener
 ) {
     val isLoading by viewModel.isLoading.observeAsState(true)
     val nowPlaying by viewModel.nowPlayingMovies.observeAsState()
@@ -95,7 +90,6 @@ fun MovieGoMainWidget(
                 onClickListener = {}
             )
             BuildBackdropItemPlaceHolder(
-                width = getMovieItemFitWidth(),
                 modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade())
             )
             HeaderWidget(
@@ -188,14 +182,11 @@ fun BuildMovieCarousel(
 ) {
     when (itemType) {
         MovieItemType.BACKDROP -> {
-            val itemWidth = getMovieItemFitWidth()
-
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(movieList) { movie ->
                     BuildBackdropItem(
-                        width = itemWidth,
                         movieData = movie,
                         itemClickListener = itemClickListener
                     )
@@ -215,12 +206,4 @@ fun BuildMovieCarousel(
             }
         }
     }
-}
-
-@Composable
-private fun getMovieItemFitWidth(): Dp {
-    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.dp / LocalDensity.current.density - 16.dp
-    val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp / LocalDensity.current.density
-    val orientation = LocalConfiguration.current.orientation
-    return if (orientation == Configuration.ORIENTATION_PORTRAIT) screenWidth else screenHeight
 }

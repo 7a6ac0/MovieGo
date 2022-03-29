@@ -2,7 +2,7 @@ package tabacowang.me.moviego
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import tabacowang.me.moviego.ui.home.HomeFragment
+import tabacowang.me.moviego.ui.home.MovieGoFragment
 import tabacowang.me.moviego.util.openFragment
 
 class MainActivity : AppCompatActivity() {
@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         if (savedInstanceState == null) {
-            openFragment(HomeFragment.newInstance(), false)
+            openFragment(MovieGoFragment.newInstance(), false)
         }
     }
 }

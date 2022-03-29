@@ -1,4 +1,4 @@
-package tabacowang.me.moviego.data.remote
+package tabacowang.me.moviego.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
@@ -36,6 +36,30 @@ data class Genre(
     val id: Int?,
     @SerializedName("name")
     val name: String?
+)
+
+data class Review(
+    @SerializedName("author")
+    val author: String?,
+    @SerializedName("author_detail")
+    val authorDetail: AuthorDetail?,
+    @SerializedName("content")
+    val content: String?,
+    @SerializedName("updated_at")
+    val updatedAt: Calendar?,
+    @SerializedName("url")
+    val url: String?
+)
+
+data class AuthorDetail(
+    @SerializedName("name")
+    val name: String?,
+    @SerializedName("username")
+    val username: String?,
+    @SerializedName("avatar_path")
+    val avatarPath: String?,
+    @SerializedName("rating")
+    val rating: Int?
 )
 
 fun MovieData.filterGenreList(genreList: List<Genre>) {

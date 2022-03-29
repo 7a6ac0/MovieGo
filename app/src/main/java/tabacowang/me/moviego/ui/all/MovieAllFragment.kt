@@ -20,12 +20,16 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import tabacowang.me.moviego.data.remote.MovieData
+import tabacowang.me.moviego.data.remote.model.MovieData
 import tabacowang.me.moviego.ui.home.BuildNormalItem
+import tabacowang.me.moviego.ui.home.BuildNormalItemPlaceHolder
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
 import tabacowang.me.moviego.ui.widget.BackPressedAppBar
 import tabacowang.me.moviego.ui.widget.LoadingWidget
@@ -35,14 +39,26 @@ class MovieAllFragment : Fragment() {
 
     companion object {
         private const val ARGUMENT_MOVIE_CATEGORY = "ARGUMENT_MOVIE_CATEGORY"
-        fun newInstance(movieCategory: MovieCategory) = MovieAllFragment().apply {
-            arguments = bundleOf(ARGUMENT_MOVIE_CATEGORY to movieCategory)
+        private const val ARGUMENT_MOVIE_ID = "ARGUMENT_MOVIE_ID"
+        fun newInstance(
+            movieId: String? = null,
+            movieCategory: MovieCategory
+        ) = MovieAllFragment().apply {
+            arguments = bundleOf(
+                ARGUMENT_MOVIE_CATEGORY to movieCategory,
+                ARGUMENT_MOVIE_ID to movieId
+            )
         }
     }
 
     private val movieCategory: MovieCategory by lazy {
         requireArguments().getSerializable(ARGUMENT_MOVIE_CATEGORY) as MovieCategory
     }
+
+    private val movieId: String by lazy {
+        requireArguments().getString(ARGUMENT_MOVIE_ID, "")
+    }
+
     private val viewModel: MovieAllViewModel by viewModel()
 
     override fun onCreateView(
@@ -60,7 +76,19 @@ class MovieAllFragment : Fragment() {
                             )
                         }
                     ) {
-                        MovieAllWidget(moviePagingData = viewModel.getMoviePagingData(movieCategory))
+                        when (movieCategory) {
+                            MovieCategory.MOW_PLAYING,
+                            MovieCategory.UPCOMING,
+                            MovieCategory.TOP_RATED,
+                            MovieCategory.POPULAR -> {
+                                MovieAllWidget(moviePagingData = viewModel.getMoviePagingData(movieCategory))
+                            }
+                            MovieCategory.SIMILAR,
+                            MovieCategory.RECOMMENDATION -> {
+                                MovieAllWidget(moviePagingData = viewModel.getMovieDetailPagingData(movieId, movieCategory))
+                            }
+                        }
+
                     }
                 }
             }
@@ -93,8 +121,8 @@ fun MovieAllWidget(
             movieItems.apply {
                 when {
                     loadState.refresh is LoadState.Loading -> {
-                        item {
-                            LoadingWidget(modifier = Modifier.fillParentMaxSize())
+                        items(count = 6) {
+                            BuildNormalItemPlaceHolder(modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade()))
                         }
                     }
                     loadState.append is LoadState.Loading -> {

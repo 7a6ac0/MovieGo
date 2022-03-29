@@ -89,6 +89,7 @@ dependencies {
     implementation(Dependencies.JetpackCompose.Accompanist.placeHolderMaterial)
     implementation(Dependencies.Coin.coil)
     implementation(Dependencies.Coin.coilCompose)
+    implementation(Dependencies.JetpackCompose.ratingBar)
 
     // DI
     implementation(Dependencies.Koin.core)

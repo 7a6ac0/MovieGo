@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import tabacowang.me.moviego.data.remote.MovieData
+import tabacowang.me.moviego.data.remote.model.MovieData
 import tabacowang.me.moviego.data.repo.MovieApiRepo
 import tabacowang.me.moviego.util.MovieCategory
 
@@ -16,5 +16,12 @@ class MovieAllViewModel : ViewModel(), KoinComponent {
 
     fun getMoviePagingData(movieCategory: MovieCategory): Flow<PagingData<MovieData>> {
         return movieApiRepo.getMoviePagingData(movieCategory = movieCategory).cachedIn(viewModelScope)
+    }
+
+    fun getMovieDetailPagingData(movieId: String, movieCategory: MovieCategory): Flow<PagingData<MovieData>> {
+        return movieApiRepo.getMovieDetailPagingData(
+            movieId = movieId,
+            movieCategory = movieCategory
+        ).cachedIn(viewModelScope)
     }
 }

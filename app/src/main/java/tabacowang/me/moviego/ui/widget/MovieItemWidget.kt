@@ -1,31 +1,37 @@
 package tabacowang.me.moviego.ui.home
 
+import android.content.res.Configuration
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.google.accompanist.placeholder.placeholder
 import tabacowang.me.moviego.BuildConfig
 import tabacowang.me.moviego.R
-import tabacowang.me.moviego.data.remote.Genre
-import tabacowang.me.moviego.data.remote.MovieData
+import tabacowang.me.moviego.data.remote.model.Genre
+import tabacowang.me.moviego.data.remote.model.MovieData
 import tabacowang.me.moviego.ui.theme.genreBackground
 import tabacowang.me.moviego.util.format
 import java.util.*
 
 @Composable
 fun BuildBackdropItemPlaceHolder(
-    width: Dp,
+    width: Dp = getMovieItemFitWidth(),
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -61,7 +67,7 @@ fun BuildBackdropItemPlaceHolder(
 
 @Composable
 fun BuildBackdropItem(
-    width: Dp,
+    width: Dp = getMovieItemFitWidth(),
     movieData: MovieData,
     itemClickListener: ((MovieData) -> Unit)? = null
 ) {
@@ -79,7 +85,7 @@ fun BuildBackdropItem(
         ) {
             Image(
                 painter = rememberImagePainter(
-                    data = "${BuildConfig.IMAGE_API_ROOT}w500/${movieData.backdropPath}",
+                    data = "${BuildConfig.IMAGE_API_ROOT}w500${movieData.backdropPath}",
                 ),
                 contentDescription = null,
                 modifier = Modifier.aspectRatio(16f.div(9)),
@@ -87,14 +93,14 @@ fun BuildBackdropItem(
             )
             Text(
                 text = movieData.title ?: stringResource(id = R.string.string_unknown),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.h5,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Text(
                 text = movieData.releaseDate?.format() ?: stringResource(id = R.string.string_unknown),
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.h6,
                 maxLines = 1,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -103,6 +109,14 @@ fun BuildBackdropItem(
             }
         }
     }
+}
+
+@Composable
+private fun getMovieItemFitWidth(): Dp {
+    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.dp / LocalDensity.current.density - 16.dp
+    val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp / LocalDensity.current.density
+    val orientation = LocalConfiguration.current.orientation
+    return if (orientation == Configuration.ORIENTATION_PORTRAIT) screenWidth else screenHeight
 }
 
 @Composable
@@ -144,33 +158,74 @@ fun BuildPosterItem(
         modifier = Modifier
             .clickable { itemClickListener?.invoke(movieData) }
     ) {
-        Column(
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .width(200.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Box(
+            modifier = Modifier.width(160.dp).aspectRatio(9f.div(16)),
         ) {
             Image(
-                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movieData.posterPath}"),
+                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500${movieData.posterPath}"),
                 contentDescription = null,
-                modifier = Modifier.aspectRatio(9f.div(16)),
-                contentScale = ContentScale.Crop
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillHeight
             )
-            Text(
-                text = movieData.title ?: stringResource(id = R.string.string_unknown),
-                style = MaterialTheme.typography.h6,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Text(
-                text = movieData.releaseDate?.format() ?: stringResource(id = R.string.string_unknown),
-                style = MaterialTheme.typography.subtitle1,
-                maxLines = 1,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            if (!movieData.genreList.isNullOrEmpty()) {
-                BuildMovieGenre(modifier = Modifier.padding(horizontal = 8.dp), genreList = movieData.genreList!!)
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Text(
+                    text = String.format("%.1f", movieData.voteAverage),
+                    style = MaterialTheme.typography.h5.copy(color = Color.White),
+                    modifier = Modifier
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colors.primary,
+                                    MaterialTheme.colors.primaryVariant
+                                )
+                            ),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BuildNormalItemPlaceHolder(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        shape = MaterialTheme.shapes.large,
+        elevation = 5.dp
+    ) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+        ) {
+            Box(modifier = Modifier.aspectRatio(1f).then(modifier))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                Text(
+                    text = stringResource(id = R.string.string_unknown),
+                    modifier = Modifier.fillMaxWidth().then(modifier)
+                )
+                Text(
+                    text = stringResource(id = R.string.string_unknown),
+                    modifier = Modifier.fillMaxWidth().then(modifier)
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    repeat(3) {
+                        Text(text = "動作", modifier = modifier)
+                    }
+                }
             }
         }
     }
@@ -192,26 +247,26 @@ fun BuildNormalItem(
             .height(120.dp)
         ) {
             Image(
-                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500/${movieData.posterPath}"),
+                painter = rememberImagePainter(data = "${BuildConfig.IMAGE_API_ROOT}w500${movieData.posterPath}"),
                 contentDescription = null,
                 modifier = Modifier.aspectRatio(1f),
                 contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxSize()
                     .padding(8.dp),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 Text(
                     text = movieData.title ?: stringResource(id = R.string.string_unknown),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.h5,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = movieData.releaseDate?.format() ?: stringResource(id = R.string.string_unknown),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.h6,
                     maxLines = 1,
                 )
                 if (!movieData.genreList.isNullOrEmpty()) {
@@ -234,7 +289,7 @@ fun BuildMovieGenre(modifier: Modifier = Modifier, genreList: List<Genre>) {
             genreList.forEach {
                 Text(
                     text = it.name ?: "",
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier
                         .background(color = genreBackground, shape = MaterialTheme.shapes.small)
                         .padding(4.dp)
@@ -253,13 +308,13 @@ fun MovieBackdropItemPreview() {
             id = "1234",
             title = "Spider-Man: No Way Home",
             originalTitle = "Spider-Man: No Way Home",
-            posterPath = "${BuildConfig.IMAGE_API_ROOT}w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+            posterPath = "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
             releaseDate = Calendar.getInstance(),
             genreList = listOf(Genre(111, "動作"), Genre(222, "科幻")),
             genreIds = null,
             voteAverage = 4.2f,
             voteCount = 100,
-            backdropPath = "${BuildConfig.IMAGE_API_ROOT}w500/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg"
+            backdropPath = "/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg"
         )
     )
 }
@@ -272,13 +327,13 @@ fun MoviePosterItemPreview() {
             id = "1234",
             title = "Spider-Man: No Way Home",
             originalTitle = "Spider-Man: No Way Home",
-            posterPath = "${BuildConfig.IMAGE_API_ROOT}w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+            posterPath = "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
             releaseDate = Calendar.getInstance(),
             genreList = listOf(Genre(111, "動作"), Genre(222, "科幻")),
             genreIds = null,
             voteAverage = 4.2f,
             voteCount = 100,
-            backdropPath = "${BuildConfig.IMAGE_API_ROOT}w500/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg"
+            backdropPath = "/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg"
         )
     )
 }
@@ -291,13 +346,13 @@ fun MovieNormalItemPreview() {
             id = "1234",
             title = "Spider-Man: No Way Home",
             originalTitle = "Spider-Man: No Way Home",
-            posterPath = "${BuildConfig.IMAGE_API_ROOT}w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+            posterPath = "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
             releaseDate = Calendar.getInstance(),
             genreList = listOf(Genre(111, "動作"), Genre(222, "科幻")),
             genreIds = null,
             voteAverage = 4.2f,
             voteCount = 100,
-            backdropPath = "${BuildConfig.IMAGE_API_ROOT}w500/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg"
+            backdropPath = "/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg"
         )
     )
 }

@@ -32,7 +32,8 @@ fun HeaderWidget(
         Text(
             text = title,
             color = MaterialTheme.colors.onSurface,
-            modifier = Modifier.placeholder(visible = showPlaceHolder, highlight = PlaceholderHighlight.fade())
+            modifier = Modifier.placeholder(visible = showPlaceHolder, highlight = PlaceholderHighlight.fade()),
+            style = MaterialTheme.typography.h5
         )
         if (onClickListener != null) {
             Button(

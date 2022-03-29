@@ -4,6 +4,9 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import tabacowang.me.moviego.data.remote.model.MovieData
+import tabacowang.me.moviego.data.remote.model.TmdbResponse
+import tabacowang.me.moviego.data.remote.model.filterGenreList
 import tabacowang.me.moviego.data.repo.MovieApiRepo
 import tabacowang.me.moviego.util.MovieCategory
 
@@ -42,7 +45,7 @@ abstract class MovieApiPagingSource<T : Any> : PagingSource<Int, T>(), KoinCompo
     }
 }
 
-class MovieAllPagingSource(
+class MoviePagingSource(
     private val movieCategory: MovieCategory
 ) : MovieApiPagingSource<MovieData>() {
     private val movieApiRepo: MovieApiRepo by inject()
@@ -50,6 +53,20 @@ class MovieAllPagingSource(
     override suspend fun apiInvoke(page: Int): TmdbResponse<MovieData>? {
         val genreList = movieApiRepo.getGenreList() ?: emptyList()
         return movieApiRepo.getMovieList(movieCategory, page)?.also {
+            it.results?.map { movieData -> movieData.filterGenreList(genreList) }
+        }
+    }
+}
+
+class MovieDetailPagingSource(
+    private val movieId: String,
+    private val movieCategory: MovieCategory
+) : MovieApiPagingSource<MovieData>() {
+    private val movieApiRepo: MovieApiRepo by inject()
+
+    override suspend fun apiInvoke(page: Int): TmdbResponse<MovieData>? {
+        val genreList = movieApiRepo.getGenreList() ?: emptyList()
+        return movieApiRepo.getMovieDetailList(movieId, movieCategory, page)?.also {
             it.results?.map { movieData -> movieData.filterGenreList(genreList) }
         }
     }

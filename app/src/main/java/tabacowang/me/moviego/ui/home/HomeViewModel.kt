@@ -9,10 +9,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import tabacowang.me.moviego.data.remote.Genre
-import tabacowang.me.moviego.data.remote.MovieData
-import tabacowang.me.moviego.data.remote.TmdbResponse
-import tabacowang.me.moviego.data.remote.filterGenreList
+import tabacowang.me.moviego.data.remote.model.MovieData
+import tabacowang.me.moviego.data.remote.model.TmdbResponse
+import tabacowang.me.moviego.data.remote.model.filterGenreList
 import tabacowang.me.moviego.data.repo.MovieApiRepo
 import tabacowang.me.moviego.util.MovieCategory
 

@@ -55,7 +55,7 @@ object Versions {
         const val activity = "1.4.0"
         const val appCompatTheme = "0.16.0"
         const val compiler = "1.0.5"
-        const val ratingBar = "1.1.1"
+        const val ratingBar = "1.2.3"
         const val paging = "1.0.0-alpha14"
         const val accompanist = "0.24.0-alpha"
     }

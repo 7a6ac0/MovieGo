@@ -1,4 +1,4 @@
-package tabacowang.me.moviego.data.remote
+package tabacowang.me.moviego.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 
