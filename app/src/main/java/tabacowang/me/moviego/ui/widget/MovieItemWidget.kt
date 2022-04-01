@@ -1,4 +1,4 @@
-package tabacowang.me.moviego.ui.home
+package tabacowang.me.moviego.ui.widget
 
 import android.content.res.Configuration
 import androidx.compose.foundation.*
@@ -307,6 +307,7 @@ fun MovieBackdropItemPreview() {
         MovieData(
             id = "1234",
             title = "Spider-Man: No Way Home",
+            overview = "spspspspspspsps",
             originalTitle = "Spider-Man: No Way Home",
             posterPath = "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
             releaseDate = Calendar.getInstance(),
@@ -326,6 +327,7 @@ fun MoviePosterItemPreview() {
         MovieData(
             id = "1234",
             title = "Spider-Man: No Way Home",
+            overview = "spspspspspspsps",
             originalTitle = "Spider-Man: No Way Home",
             posterPath = "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
             releaseDate = Calendar.getInstance(),
@@ -345,6 +347,7 @@ fun MovieNormalItemPreview() {
         MovieData(
             id = "1234",
             title = "Spider-Man: No Way Home",
+            overview = "spspspspspspsps",
             originalTitle = "Spider-Man: No Way Home",
             posterPath = "/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
             releaseDate = Calendar.getInstance(),

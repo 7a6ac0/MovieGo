@@ -8,6 +8,7 @@
     <string name="movie_detail_cast">Cast</string>
     <string name="movie_detail_similar">Similar</string>
     <string name="movie_detail_recommendation">Recommendation</string>
+    <string name="movie_detail_review">Review</string>
 
     <string name="string_unknown">UNKNOWN</string>
 </resources>

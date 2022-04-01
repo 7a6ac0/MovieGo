@@ -9,5 +9,6 @@ enum class MovieCategory(val category: String, @StringRes val stringRes: Int) {
     TOP_RATED("top_rated", R.string.category_top_rated),
     UPCOMING("upcoming", R.string.category_upcoming),
     SIMILAR("similar", R.string.movie_detail_similar),
-    RECOMMENDATION("recommendations", R.string.movie_detail_recommendation)
+    RECOMMENDATION("recommendations", R.string.movie_detail_recommendation),
+    REVIEW("reviews", R.string.movie_detail_review)
 }

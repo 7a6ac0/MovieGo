@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import tabacowang.me.moviego.data.remote.model.MovieData
+import tabacowang.me.moviego.data.remote.model.Review
 import tabacowang.me.moviego.data.repo.MovieApiRepo
 import tabacowang.me.moviego.util.MovieCategory
 
@@ -22,6 +23,12 @@ class MovieAllViewModel : ViewModel(), KoinComponent {
         return movieApiRepo.getMovieDetailPagingData(
             movieId = movieId,
             movieCategory = movieCategory
+        ).cachedIn(viewModelScope)
+    }
+
+    fun getMovieReviewPagingData(movieId: String): Flow<PagingData<Review>> {
+        return movieApiRepo.getMovieReviewPagingData(
+            movieId = movieId
         ).cachedIn(viewModelScope)
     }
 }

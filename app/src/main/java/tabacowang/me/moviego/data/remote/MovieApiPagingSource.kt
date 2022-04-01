@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import tabacowang.me.moviego.data.remote.model.MovieData
+import tabacowang.me.moviego.data.remote.model.Review
 import tabacowang.me.moviego.data.remote.model.TmdbResponse
 import tabacowang.me.moviego.data.remote.model.filterGenreList
 import tabacowang.me.moviego.data.repo.MovieApiRepo
@@ -69,5 +70,15 @@ class MovieDetailPagingSource(
         return movieApiRepo.getMovieDetailList(movieId, movieCategory, page)?.also {
             it.results?.map { movieData -> movieData.filterGenreList(genreList) }
         }
+    }
+}
+
+class MovieReviewPagingSource(
+    private val movieId: String
+) : MovieApiPagingSource<Review>() {
+    private val movieApiRepo: MovieApiRepo by inject()
+
+    override suspend fun apiInvoke(page: Int): TmdbResponse<Review>? {
+        return movieApiRepo.getMovieReviews(movieId, page)
     }
 }

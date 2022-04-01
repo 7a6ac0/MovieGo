@@ -1,5 +1,7 @@
 package tabacowang.me.moviego.ui.all
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,14 +30,17 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tabacowang.me.moviego.data.remote.model.MovieData
-import tabacowang.me.moviego.ui.home.BuildNormalItem
-import tabacowang.me.moviego.ui.home.BuildNormalItemPlaceHolder
+import tabacowang.me.moviego.data.remote.model.Review
+import tabacowang.me.moviego.ui.MovieReviewClickListener
+import tabacowang.me.moviego.ui.detail.MovieReviewWidget
+import tabacowang.me.moviego.ui.widget.BuildNormalItem
+import tabacowang.me.moviego.ui.widget.BuildNormalItemPlaceHolder
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
 import tabacowang.me.moviego.ui.widget.BackPressedAppBar
 import tabacowang.me.moviego.ui.widget.LoadingWidget
 import tabacowang.me.moviego.util.MovieCategory
 
-class MovieAllFragment : Fragment() {
+class MovieAllFragment : Fragment(), MovieReviewClickListener {
 
     companion object {
         private const val ARGUMENT_MOVIE_CATEGORY = "ARGUMENT_MOVIE_CATEGORY"
@@ -87,12 +92,23 @@ class MovieAllFragment : Fragment() {
                             MovieCategory.RECOMMENDATION -> {
                                 MovieAllWidget(moviePagingData = viewModel.getMovieDetailPagingData(movieId, movieCategory))
                             }
+                            MovieCategory.REVIEW -> {
+                                MovieAllReviewWidget(
+                                    moviePagingData = viewModel.getMovieReviewPagingData(movieId),
+                                    reviewListener = this@MovieAllFragment
+                                )
+                            }
                         }
 
                     }
                 }
             }
         }
+    }
+
+    override fun onMovieReviewClicked(review: Review) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(review.url))
+        startActivity(browserIntent)
     }
 }
 
@@ -112,13 +128,54 @@ fun MovieAllWidget(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            items(movieItems) { movie ->
-                movie?.let {
+            items(movieItems) { item ->
+                item?.let {
                     BuildNormalItem(movieData = it)
                 }
             }
 
             movieItems.apply {
+                when {
+                    loadState.refresh is LoadState.Loading -> {
+                        items(count = 6) {
+                            BuildNormalItemPlaceHolder(modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade()))
+                        }
+                    }
+                    loadState.append is LoadState.Loading -> {
+                        item {
+                            LoadingWidget(modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MovieAllReviewWidget(
+    moviePagingData: Flow<PagingData<Review>>,
+    reviewListener: MovieReviewClickListener
+) {
+    val reviewItems = moviePagingData.collectAsLazyPagingItems()
+
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(
+            isRefreshing = reviewItems.loadState.refresh == LoadState.Loading
+        ),
+        onRefresh = { reviewItems.refresh() },
+    ) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            items(reviewItems) { item ->
+                item?.let {
+                    MovieReviewWidget(review = it, itemClickListener = reviewListener::onMovieReviewClicked)
+                }
+            }
+
+            reviewItems.apply {
                 when {
                     loadState.refresh is LoadState.Loading -> {
                         items(count = 6) {

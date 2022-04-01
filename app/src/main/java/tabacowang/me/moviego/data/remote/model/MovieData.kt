@@ -10,6 +10,8 @@ data class MovieData(
     val posterPath: String?,
     @SerializedName("title")
     val title: String?,
+    @SerializedName("overview")
+    val overview: String?,
     @SerializedName("original_title")
     val originalTitle: String?,
     @SerializedName("release_date")
@@ -41,7 +43,7 @@ data class Genre(
 data class Review(
     @SerializedName("author")
     val author: String?,
-    @SerializedName("author_detail")
+    @SerializedName("author_details")
     val authorDetail: AuthorDetail?,
     @SerializedName("content")
     val content: String?,
@@ -59,7 +61,7 @@ data class AuthorDetail(
     @SerializedName("avatar_path")
     val avatarPath: String?,
     @SerializedName("rating")
-    val rating: Int?
+    val rating: Float?
 )
 
 fun MovieData.filterGenreList(genreList: List<Genre>) {

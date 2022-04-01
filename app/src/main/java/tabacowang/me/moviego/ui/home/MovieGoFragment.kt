@@ -30,7 +30,7 @@ import tabacowang.me.moviego.ui.MovieGoClickListener
 import tabacowang.me.moviego.ui.all.MovieAllFragment
 import tabacowang.me.moviego.ui.detail.MovieDetailFragment
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
-import tabacowang.me.moviego.ui.widget.HeaderWidget
+import tabacowang.me.moviego.ui.widget.*
 import tabacowang.me.moviego.util.MovieCategory
 import tabacowang.me.moviego.util.openFragment
 

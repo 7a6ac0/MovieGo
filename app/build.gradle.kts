@@ -79,6 +79,7 @@ dependencies {
     // Ui Component
     implementation(Dependencies.material)
     implementation(Dependencies.JetpackCompose.ui)
+    implementation(Dependencies.JetpackCompose.foundation)
     implementation(Dependencies.JetpackCompose.material)
     implementation(Dependencies.JetpackCompose.tooling)
     implementation(Dependencies.JetpackCompose.activity)

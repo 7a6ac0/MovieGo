@@ -3,10 +3,7 @@ package tabacowang.me.moviego.data.remote
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import tabacowang.me.moviego.data.remote.model.CreditData
-import tabacowang.me.moviego.data.remote.model.GenreList
-import tabacowang.me.moviego.data.remote.model.MovieData
-import tabacowang.me.moviego.data.remote.model.TmdbResponse
+import tabacowang.me.moviego.data.remote.model.*
 
 interface MovieApiService {
     @GET("genre/movie/list")
@@ -27,4 +24,10 @@ interface MovieApiService {
         @Path("movieCategory") movieCategory: String,
         @Query("page") page: Int? = null
     ): TmdbResponse<MovieData>
+
+    @GET("movie/{movieId}/reviews")
+    suspend fun getMovieReviews(
+        @Path("movieId") movieId: String,
+        @Query("page") page: Int? = null
+    ): TmdbResponse<Review>
 }

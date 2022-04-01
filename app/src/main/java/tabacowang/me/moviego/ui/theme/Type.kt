@@ -1,11 +1,9 @@
 package tabacowang.me.moviego.ui.theme
 
 import androidx.compose.material.Typography
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import tabacowang.me.moviego.R
 
 private val FiraSans = FontFamily(
@@ -14,54 +12,19 @@ private val FiraSans = FontFamily(
     Font(R.font.firasans_semibold, FontWeight.W600)
 )
 
+private val defaultTypography = Typography()
 val Typography = Typography(
-    h4 = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W600,
-        fontSize = 30.sp
-    ),
-    h5 = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W600,
-        fontSize = 24.sp
-    ),
-    h6 = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W600,
-        fontSize = 20.sp
-    ),
-    subtitle1 = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W600,
-        fontSize = 16.sp
-    ),
-    subtitle2 = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    body1 = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
-    ),
-    body2 = TextStyle(
-        fontFamily = FiraSans,
-        fontSize = 14.sp
-    ),
-    button = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    ),
-    overline = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.W500,
-        fontSize = 12.sp
-    )
+    h1 = defaultTypography.h1.copy(fontFamily = FiraSans),
+    h2 = defaultTypography.h2.copy(fontFamily = FiraSans),
+    h3 = defaultTypography.h3.copy(fontFamily = FiraSans),
+    h4 = defaultTypography.h4.copy(fontFamily = FiraSans),
+    h5 = defaultTypography.h5.copy(fontFamily = FiraSans),
+    h6 = defaultTypography.h6.copy(fontFamily = FiraSans),
+    subtitle1 = defaultTypography.subtitle1.copy(fontFamily = FiraSans),
+    subtitle2 = defaultTypography.subtitle2.copy(fontFamily = FiraSans),
+    body1 = defaultTypography.body1.copy(fontFamily = FiraSans),
+    body2 = defaultTypography.body2.copy(fontFamily = FiraSans),
+    button = defaultTypography.button.copy(fontFamily = FiraSans),
+    caption = defaultTypography.caption.copy(fontFamily = FiraSans),
+    overline = defaultTypography.overline.copy(fontFamily = FiraSans)
 )

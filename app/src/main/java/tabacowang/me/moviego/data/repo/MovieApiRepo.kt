@@ -11,10 +11,8 @@ import tabacowang.me.moviego.data.local.GenreModel
 import tabacowang.me.moviego.data.remote.MoviePagingSource
 import tabacowang.me.moviego.data.remote.MovieApiService
 import tabacowang.me.moviego.data.remote.MovieDetailPagingSource
-import tabacowang.me.moviego.data.remote.model.CreditData
-import tabacowang.me.moviego.data.remote.model.Genre
-import tabacowang.me.moviego.data.remote.model.MovieData
-import tabacowang.me.moviego.data.remote.model.TmdbResponse
+import tabacowang.me.moviego.data.remote.MovieReviewPagingSource
+import tabacowang.me.moviego.data.remote.model.*
 import tabacowang.me.moviego.util.MovieCategory
 
 interface MovieApiRepo {
@@ -33,6 +31,11 @@ interface MovieApiRepo {
         page: Int? = null
     ): TmdbResponse<MovieData>?
 
+    suspend fun getMovieReviews(
+        movieId: String,
+        page: Int? = null
+    ): TmdbResponse<Review>?
+
     fun getMoviePagingData(
         movieCategory: MovieCategory,
         pageSize: Int = 10
@@ -43,6 +46,11 @@ interface MovieApiRepo {
         movieCategory: MovieCategory,
         pageSize: Int = 10
     ): Flow<PagingData<MovieData>>
+
+    fun getMovieReviewPagingData(
+        movieId: String,
+        pageSize: Int = 10
+    ): Flow<PagingData<Review>>
 }
 
 class MovieApiApiRepoImpl : BaseRepo(), MovieApiRepo, KoinComponent {
@@ -78,8 +86,15 @@ class MovieApiApiRepoImpl : BaseRepo(), MovieApiRepo, KoinComponent {
         movieId: String,
         movieCategory: MovieCategory,
         page: Int?
-    ): TmdbResponse<MovieData>? = coroutineApiCall(Dispatchers.IO) {
+    ) = coroutineApiCall(Dispatchers.IO) {
         movieApiService.getMovieDetailList(movieId, movieCategory.category, page)
+    }
+
+    override suspend fun getMovieReviews(
+        movieId: String,
+        page: Int?
+    ) = coroutineApiCall(Dispatchers.IO) {
+        movieApiService.getMovieReviews(movieId, page)
     }
 
     override fun getMoviePagingData(
@@ -105,6 +120,20 @@ class MovieApiApiRepoImpl : BaseRepo(), MovieApiRepo, KoinComponent {
             config = PagingConfig(pageSize = pageSize),
             pagingSourceFactory = {
                 MovieDetailPagingSource(movieId = movieId, movieCategory = movieCategory)
+            }
+        )
+
+        return pager.flow
+    }
+
+    override fun getMovieReviewPagingData(
+        movieId: String,
+        pageSize: Int
+    ): Flow<PagingData<Review>> {
+        val pager = Pager(
+            config = PagingConfig(pageSize = pageSize),
+            pagingSourceFactory = {
+                MovieReviewPagingSource(movieId)
             }
         )
 

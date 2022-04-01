@@ -9,10 +9,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import tabacowang.me.moviego.data.remote.model.CreditData
-import tabacowang.me.moviego.data.remote.model.MovieData
-import tabacowang.me.moviego.data.remote.model.TmdbResponse
-import tabacowang.me.moviego.data.remote.model.filterGenreList
+import tabacowang.me.moviego.data.remote.model.*
 import tabacowang.me.moviego.data.repo.MovieApiRepo
 import tabacowang.me.moviego.util.MovieCategory
 
@@ -23,6 +20,7 @@ class MovieDetailViewModel : ViewModel(), KoinComponent {
     val credits: MutableState<CreditData?> = mutableStateOf(null)
     val similarMovies: MutableState<TmdbResponse<MovieData>?> = mutableStateOf(null)
     val recommendationMovies: MutableState<TmdbResponse<MovieData>?> = mutableStateOf(null)
+    val reviews: MutableState<TmdbResponse<Review>?> = mutableStateOf(null)
 
     fun getMovieDetail(movieId: String) {
         viewModelScope.launch {
@@ -36,16 +34,19 @@ class MovieDetailViewModel : ViewModel(), KoinComponent {
                     it.results?.map { movieData -> movieData.filterGenreList(genreList) }
                 }
             }
+            val reviewRequest = async { movieApiRepo.getMovieReviews(movieId = movieId) }
 
-            val (creditResult, similarMovieResult, recommendationMovieResult) = listOf(
+            val (creditResult, similarMovieResult, recommendationMovieResult, reviewResult) = listOf(
                 creditRequest,
                 similarMovieRequest,
-                recommendationMovieRequest
+                recommendationMovieRequest,
+                reviewRequest
             ).awaitAll()
 
             credits.value = creditResult as? CreditData
             similarMovies.value = similarMovieResult as? TmdbResponse<MovieData>
             recommendationMovies.value = recommendationMovieResult as? TmdbResponse<MovieData>
+            reviews.value = reviewResult as? TmdbResponse<Review>
 
             isLoading.value = false
         }

@@ -1,5 +1,7 @@
 package tabacowang.me.moviego.ui.detail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,10 +24,12 @@ import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tabacowang.me.moviego.R
 import tabacowang.me.moviego.data.remote.model.MovieData
+import tabacowang.me.moviego.data.remote.model.Review
 import tabacowang.me.moviego.ui.MovieGoClickListener
+import tabacowang.me.moviego.ui.MovieReviewClickListener
 import tabacowang.me.moviego.ui.all.MovieAllFragment
-import tabacowang.me.moviego.ui.home.BuildBackdropItem
-import tabacowang.me.moviego.ui.home.BuildPosterItem
+import tabacowang.me.moviego.ui.widget.BuildBackdropItem
+import tabacowang.me.moviego.ui.widget.BuildPosterItem
 import tabacowang.me.moviego.ui.theme.MovieGoTheme
 import tabacowang.me.moviego.ui.widget.BackPressedAppBar
 import tabacowang.me.moviego.ui.widget.HeaderWidget
@@ -33,7 +37,8 @@ import tabacowang.me.moviego.ui.widget.LoadingWidget
 import tabacowang.me.moviego.util.MovieCategory
 import tabacowang.me.moviego.util.openFragment
 
-class MovieDetailFragment : Fragment(), MovieGoClickListener {
+
+class MovieDetailFragment : Fragment(), MovieGoClickListener, MovieReviewClickListener {
     companion object {
         private const val ARGUMENT_MOVIE_DATA = "ARGUMENT_MOVIE_DATA"
         fun newInstance(movieData: MovieData) = MovieDetailFragment().apply {
@@ -72,7 +77,12 @@ class MovieDetailFragment : Fragment(), MovieGoClickListener {
                         if (isLoading) {
                             LoadingWidget(modifier = Modifier.fillMaxSize())
                         } else {
-                            MovieDetailMainWidget(movieData, viewModel, this@MovieDetailFragment)
+                            MovieDetailMainWidget(
+                                movieData,
+                                viewModel,
+                                this@MovieDetailFragment,
+                                this@MovieDetailFragment
+                            )
                         }
                     }
                 }
@@ -90,17 +100,24 @@ class MovieDetailFragment : Fragment(), MovieGoClickListener {
     override fun onMovieItemClicked(movieData: MovieData) {
         requireActivity().openFragment(newInstance(movieData), false)
     }
+
+    override fun onMovieReviewClicked(review: Review) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(review.url))
+        startActivity(browserIntent)
+    }
 }
 
 @Composable
 fun MovieDetailMainWidget(
     movieData: MovieData,
     viewModel: MovieDetailViewModel,
-    listener: MovieGoClickListener
+    listener: MovieGoClickListener,
+    reviewListener: MovieReviewClickListener
 ) {
     val creditData = viewModel.credits.value
     val similarMovies = viewModel.similarMovies.value
     val recommendationMovies = viewModel.recommendationMovies.value
+    val reviews = viewModel.reviews.value
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -166,6 +183,21 @@ fun MovieDetailMainWidget(
                         )
                     }
                 }
+            }
+        }
+
+        if (reviews?.results?.isNotEmpty() == true) {
+            item {
+                HeaderWidget(title = stringResource(id = R.string.movie_detail_review)) {
+                    listener.onButtonSeeAllClicked(MovieCategory.REVIEW)
+                }
+            }
+
+            items(reviews.results) { review ->
+                MovieReviewWidget(
+                    review = review,
+                    itemClickListener = reviewListener::onMovieReviewClicked
+                )
             }
         }
     }
