@@ -1,4 +1,5 @@
 <h1 align="center">MovieGo</h1>
+
 MovieGo is a sample Android project using [The Movie DB](https://www.themoviedb.org/) API based on MVVM architecture.
 
 ## Features
