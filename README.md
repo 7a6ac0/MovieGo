@@ -19,7 +19,7 @@ MovieGo is a sample Android project using [The Movie DB](https://www.themoviedb.
     * [Paging 3](https://developer.android.com/topic/libraries/architecture/paging/v3-overview) - Pagination loading for RecyclerView.
     * [ViewModel](https://developer.android.com/reference/androidx/lifecycle/ViewModel) - UI related data holder, lifecycle aware.
     * [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) - Observable data holder that notify views when underlying data changes.
-* [Navigating with Compose](https://developer.android.com/jetpack/compose/navigation) - Navigate between composables.
+* [Navigating with Compose](https://developer.android.com/jetpack/compose/navigation) - Navigate between composables.(Upcoming)
 * [Jetpack Compose](https://developer.android.com/jetpack/compose) - Declarative and simplified way for UI development.
 * [Coroutine](https://developer.android.com/kotlin/coroutines) Concurrency design pattern for asynchronous programming.
 * [Coil](https://github.com/coil-kt/coil) - Image loading.
