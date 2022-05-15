@@ -136,12 +136,9 @@ fun MovieReviewWidget(
             .padding(horizontal = 8.dp)
             .clickable { itemClickListener?.invoke(review) }
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Column {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 var avatarUrl = review.authorDetail?.avatarPath
                 if (avatarUrl?.startsWith("/http") == true) {
@@ -161,9 +158,7 @@ fun MovieReviewWidget(
                     contentScale = ContentScale.Crop
                 )
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
+                    modifier = Modifier.padding(8.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
