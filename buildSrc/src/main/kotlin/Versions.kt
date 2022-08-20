@@ -1,6 +1,6 @@
 object Versions {
-    const val kotlin = "1.6.10"
-    const val androidGradle = "7.0.4"
+    const val kotlin = "1.7.0"
+    const val androidGradle = "7.2.2"
     const val material = "1.5.0"
 
     // TODO: Deprecated, to migrate to coroutine + flow
@@ -26,7 +26,7 @@ object Versions {
     const val testRunner = "1.2.0"
 
     object Android {
-        const val sdk = 31
+        const val sdk = 32
         const val minSdk = 23
     }
 
@@ -47,16 +47,16 @@ object Versions {
         const val lifecycle = "2.4.1"
         const val legacy = "1.0.0"
         const val paging = "3.1.0"
-        const val room = "2.4.1"
+        const val room = "2.4.3"
     }
 
     object JetpackCompose {
-        const val jetpackCompose = "1.1.0"
+        const val jetpackCompose = "1.2.0"
         const val activity = "1.4.0"
         const val appCompatTheme = "0.16.0"
         const val compiler = "1.0.5"
         const val ratingBar = "1.2.3"
         const val paging = "1.0.0-alpha14"
-        const val accompanist = "0.24.0-alpha"
+        const val accompanist = "0.25.1"
     }
 }
